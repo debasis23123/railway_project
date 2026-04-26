@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<h2>PNR Status</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="pnr" placeholder="Enter PNR" required>
+    <button type="submit">Check</button>
+</form>
+
+{% if booking %}
+    <h3>Booking Details</h3>
+    <p>Train: {{ booking.train.name }}</p>
+    <p>Passenger: {{ booking.passenger.name }}</p>
+    <p>Status: {{ booking.status }}</p>
+    <p>Date: {{ booking.date }}</p>
+{% endif %}
+
+</body>
+</html>

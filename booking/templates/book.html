@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <div class="card shadow p-4">
+            <h3 class="text-center mb-4">🎟️ Book Train Ticket</h3>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <!-- Train Selection -->
+                <div class="mb-3">
+                    <label class="form-label">Select Train</label>
+                    <select name="train" class="form-control" required>
+                        <option value="">-- Select Train --</option>
+                        {% for train in trains %}
+                            <option value="{{ train.id }}">
+                                {{ train.name }} ({{ train.source }} → {{ train.destination }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Journey Date -->
+                <div class="mb-3">
+                    <label class="form-label">Journey Date</label>
+                    <input type="date" name="date" class="form-control" required>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" name="phone" class="form-control" placeholder="Enter phone number" required>
+                </div>
+
+                <!-- Passenger Count -->
+                <div class="mb-3">
+                    <label class="form-label">Number of Passengers</label>
+                    <input type="number" name="count" class="form-control" min="1" max="6" required>
+                </div>
+
+                <!-- Dynamic Passenger Fields -->
+                <div id="passenger-box"></div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success w-100 mt-3">
+                    🚀 Book Ticket
+                </button>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    function addPassengers(count) {
+        let box = document.getElementById("passenger-box");
+        box.innerHTML = "";
+
+        for (let i = 1; i <= count; i++) {
+            box.innerHTML += `
+                <div class="card mt-3 p-3">
+                    <h5>Passenger ${i}</h5>
+
+                    <input type="text" class="form-control mb-2"
+                        name="name${i}" placeholder="Full Name" required>
+
+                    <input type="number" class="form-control mb-2"
+                        name="age${i}" placeholder="Age" required>
+
+                    <select class="form-control" name="gender${i}" required>
+                        <option value="">Select Gender</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+            `;
+        }
+    }
+
+    document.querySelector('[name="count"]').addEventListener('change', function() {
+        addPassengers(this.value);
+    });
+
+});
+</script>
+
+{% endblock %}
