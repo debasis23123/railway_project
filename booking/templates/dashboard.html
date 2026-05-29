@@ -1,73 +1,131 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<title>Dashboard</title>
+
+<style>
+body {
+    font-family: 'Segoe UI';
+    background: linear-gradient(135deg,#0f172a,#1e293b);
+    color: white;
+    margin: 0;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    padding: 20px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* Cards Layout */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Card Style */
+.card {
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 18px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* Colors */
+.blue { background: #2563eb; }
+.green { background: #16a34a; }
+.orange { background: #ea580c; }
+.red { background: #dc2626; }
+
+/* Booking Section */
+.bookings {
+    padding: 20px;
+}
+
+/* Booking Card */
+.booking-card {
+    background: #334155;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    transition: 0.3s;
+}
+
+.booking-card:hover {
+    transform: scale(1.02);
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    text-decoration: none;
+    color: white;
+}
+
+.btn-blue { background: #06b6d4; }
+.btn-red { background: #ef4444; }
+
+</style>
 </head>
 
-<body class="bg-dark text-white">
+<body>
 
-<!-- 🔝 Navbar -->
-<nav class="navbar navbar-dark bg-dark px-4">
-    <span class="navbar-brand">🚆 IRCTC Clone</span>
+<div class="header">📊 IRCTC Dashboard</div>
 
-    <div>
-        <a href="/" class="btn btn-light">Home</a>
-        <a href="/book/" class="btn btn-warning">Book</a>
-        <a href="/dashboard/" class="btn btn-info">Dashboard</a>
-    </div>
-</nav>
-
-<div class="container mt-5">
-
-    {% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} mt-3">
-            {{ message }}
-        </div>
-    {% endfor %}
-{% endif %}
-    <!-- 📊 Title -->
-    <h2 class="text-center mb-5">📊 Dashboard</h2>
-
-    <!-- 📈 Stats -->
-    <div class="row text-center">
-
-        <div class="col-md-6 mb-4">
-            <div class="card bg-primary text-white p-4 shadow">
-                <h3>Total Trains</h3>
-                <h1>{{ trains }}</h1>
-            </div>
-        </div>
-
-        <div class="col-md-6 mb-4">
-            <div class="card bg-success text-white p-4 shadow">
-                <h3>Total Bookings</h3>
-                <a href="/bookings/" style="text-decoration:none; color:white;">
-                    <h1>{{ bookings }}</h1>
-                </a>
-            </div>
-        </div>
-
+<!-- TOP CARDS -->
+<div class="cards">
+    <div class="card blue">
+        <h3>Total Trains</h3>
+        <h1>{{ trains }}</h1>
     </div>
 
-    <!-- 🎫 User Bookings -->
-    <h3 class="mt-5">🎫 Your Bookings</h3>
+    <div class="card green">
+        <h3>Total Bookings</h3>
+        <h1>{{ bookings }}</h1>
+    </div>
+
+    <div class="card orange">
+        <h3>Confirmed</h3>
+        <h1>{{ confirmed }}</h1>
+    </div>
+
+    <div class="card red">
+        <h3>Waiting</h3>
+        <h1>{{ waiting }}</h1>
+    </div>
+</div>
+
+<!-- BOOKINGS -->
+<div class="bookings">
+    <h2>🎫 Your Bookings</h2>
 
     {% for booking in user_bookings %}
-    <div class="card bg-secondary text-white p-3 mb-3 shadow">
-        <p><strong>PNR:</strong> {{ booking.pnr }}</p>
-        <p><strong>Train:</strong> {{ booking.train.name }}</p>
-        <p><strong>Status:</strong> {{ booking.status }}</p>
+    <div class="booking-card">
+        <p><b>PNR:</b> {{ booking.pnr }}</p>
+        <p><b>Train:</b> {{ booking.train.name }}</p>
+        <p><b>Date:</b> {{ booking.date }}</p>
+        <p><b>Status:</b> {{ booking.status }}</p>
+
+        <a href="/pnr/?pnr={{ booking.pnr }}" class="btn btn-blue">
+            Check Status
+        </a>
 
         {% if booking.status == "CONFIRMED" %}
-            <a href="{% url 'download_ticket' booking.id %}" class="btn btn-danger">
-                Download Ticket PDF
-            </a>
+        <a href="{% url 'download_ticket' booking.id %}" class="btn btn-red">
+            Download Ticket
+        </a>
         {% endif %}
     </div>
     {% empty %}
-        <p>No bookings yet</p>
+        <p>No bookings today</p>
     {% endfor %}
 
 </div>

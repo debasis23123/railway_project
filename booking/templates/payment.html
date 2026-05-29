@@ -1,18 +1,240 @@
 <!DOCTYPE html>
-<html lang="en">
+{% load static %}
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h2>💳 Payment Page</h2>
-<p>PNR: {{ booking.pnr }}</p>
-<p>Amount: ₹{{ booking.seats_booked }}00</p>
+<title>Desktop Payment</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<form method="post">
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #eef2f7, #f8fafc);
+    margin: 0;
+}
+
+/* Layout */
+.wrapper {
+    display: grid;
+    grid-template-columns: 280px 1fr 320px;
+    gap: 25px;
+    padding: 40px;
+}
+
+@media (max-width: 1000px) {
+    .wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Cards */
+.sidebar, .main, .summary {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* Sidebar */
+.option {
+    padding: 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+.option:hover {
+    background: #eef2ff;
+}
+
+.active {
+    background: #6366f1;
+    color: white;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 14px;
+    margin-top: 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    transition: 0.2s;
+}
+
+input:focus {
+    border-color: #6366f1;
+    outline: none;
+}
+
+/* Buttons */
+button {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #eef2ff;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+button:hover {
+    background: #6366f1;
+    color: white;
+}
+
+/* Pay Button */
+.pay-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #000, #333);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    margin-top: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.pay-btn:hover {
+    transform: scale(1.03);
+}
+
+/* QR */
+.qr img {
+    margin-top: 10px;
+}
+
+/* Hidden */
+.hidden {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <!-- LEFT -->
+    <div class="sidebar">
+        <h3>Payment Methods</h3>
+
+        <div class="option active" onclick="showSection(event,'upi')">UPI</div>
+        <div class="option" onclick="showSection(event,'card')">Cards</div>
+        <div class="option" onclick="showSection(event,'netbank')">Net Banking</div>
+        <div class="option" onclick="showSection(event,'wallet')">Wallets</div>
+    </div>
+
+    <!-- CENTER -->
+    <div class="main">
+
+        <!-- UPI -->
+        <div id="upi">
+            <h2>UPI Payment</h2>
+            <p>Select your app:</p>
+            <button>Google Pay</button>
+            <button>PhonePe</button>
+            <button>Paytm</button>
+
+            {% load static %}
+<form method="POST" id="paymentForm">
     {% csrf_token %}
-    <button type="submit">Pay Now</button>
+
+<div class="payment-box">
+    <h2>Scan & Pay</h2>
+
+    <img src="{% static 'payment/qr.png' %}"
+         alt="Payment QR Code"
+         width="250">
+
+    <p>Scan using GPay / PhonePe / Paytm</p>
+<button type="button" class="pay-btn" onclick="fakeScan()">I have scanned</button>
+
+<p id="status"></p>
+</div>
 </form>
+        </div>
+
+        <!-- CARD -->
+        <div id="card" class="hidden">
+            <h2>Card Payment</h2>
+
+            <input type="text" placeholder="Card Number">
+
+            <div class="row">
+                <input type="text" placeholder="MM/YY">
+                <input type="text" placeholder="CVV">
+            </div>
+
+            <input type="text" placeholder="Card Holder Name">
+        </div>
+
+        <!-- NETBANK -->
+        <div id="netbank" class="hidden">
+            <h2>Net Banking</h2>
+            <input type="text" placeholder="Search Bank">
+        </div>
+
+        <!-- WALLET -->
+        <div id="wallet" class="hidden">
+            <h2>Wallets</h2>
+            <p>Paytm Wallet</p>
+        </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="summary">
+        <h3>Order Summary</h3>
+        <p>Product: Ticket Booking</p>
+        <p>Total: ₹{{ booking.total_price }}</p>
+
+     <button type="button" class="pay-btn" onclick="fakeScan()">I have scanned</button>
+    </div>
+
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<button id="pay">Pay Now</button>
+
+<script>
+function fakeScan() {
+    const status = document.getElementById("status");
+
+    status.innerHTML = " Processing payment...";
+
+    setTimeout(() => {
+        status.innerHTML = "Payment Successful!";
+
+        // redirect after 2 sec
+        setTimeout(() => {
+                document.getElementById("paymentForm").submit();
+        }, 2000);
+
+    }, 3000); // 3 sec fake delay
+}
+</script>
+
+<script>
+function showSection(event,section) {
+    document.querySelectorAll('#upi,#card,#netbank,#wallet')
+        .forEach(el => el.classList.add('hidden'));
+
+    document.getElementById(section).classList.remove('hidden');
+
+    document.querySelectorAll('.option')
+        .forEach(el => el.classList.remove('active'));
+
+    event.target.classList.add('active');
+}
+
+function payNow() {
+    alert("Connect Razorpay here");
+}
+</script>
 
 </body>
 </html>

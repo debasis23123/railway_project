@@ -9,6 +9,8 @@ class Train(models.Model):
     source = models.CharField(max_length=100)
     destination = models.CharField(max_length=100)
     seats = models.IntegerField()
+    distance = models.IntegerField(default=1000)
+    price_per_km= models.FloatField(default=2.0)
 
     def __str__(self):
         return self.name
@@ -22,6 +24,8 @@ class Booking(models.Model):
     seats_booked = models.IntegerField()
     status = models.CharField(max_length=20, default='CONFIRMED')
     phone = models.CharField(max_length=15)
+    email = models.EmailField(null=True, blank=True)
+    total_price = models.FloatField(default=0)
 
     pnr = models.CharField(max_length=12, unique=True, editable=False)
 
@@ -44,7 +48,8 @@ class Passenger(models.Model):
     name = models.CharField(max_length=100)
     age = models.IntegerField()
     gender = models.CharField(max_length=10)
-    seat_number = models.CharField(max_length=10, null=True, blank=True)
+    seat_number = models.CharField(max_length=100, null=True, blank=True)
+    coach= models.CharField(max_length=10,default='')
 
     def __str__(self):
         return self.name
