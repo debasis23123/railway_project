@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <style>
+    body {
+    font-family: 'Segoe UI';
+    background: linear-gradient(135deg, #1e3a8a, #0f172a, #020617);
+    color: white;
+    margin: 0;
+}
+  </style>
+</head>
+<body>
+<h1>🚆 Train List</h1>
+
+{% for train in trains %}
+    <div style="background:#334155; padding:15px; margin:10px; border-radius:10px;">
+        <h3>{{ train.name }}</h3>
+        <p>From: {{ train.source }}</p>
+        <p>To: {{ train.destination }}</p>
+        <p>Seats: {{ train.seats }}</p>
+    </div>
+{% empty %}
+    <p>No trains available</p>
+{% endfor %}
+
+</body>
+</html>
